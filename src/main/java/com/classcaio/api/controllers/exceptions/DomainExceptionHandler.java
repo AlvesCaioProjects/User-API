@@ -1,4 +1,4 @@
-package com.classcaio.api.domain.exceptions;
+package com.classcaio.api.controllers.exceptions;
 
 import com.classcaio.api.services.exceptions.ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
