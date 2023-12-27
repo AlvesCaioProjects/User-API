@@ -3,6 +3,7 @@ package com.classcaio.api.services.impl;
 import com.classcaio.api.domain.User;
 import com.classcaio.api.domain.dto.UserDTO;
 import com.classcaio.api.repositories.UserRepository;
+import com.classcaio.api.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +14,6 @@ import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceImplTest {
 
@@ -48,10 +47,23 @@ class UserServiceImplTest {
         User response = service.findById(ID);
 
         Assertions.assertNotNull(response);
+
         Assertions.assertEquals(User.class, response.getClass());
         Assertions.assertEquals(ID, response.getId());
         Assertions.assertEquals(NAME, response.getName());
         Assertions.assertEquals(EMAIL, response.getEmail());
+    }
+
+    @Test
+    void whenFindByIdThenReturnAnObjectNotFoundException() {
+        Mockito.when(repository.findById(Mockito.anyInt())).thenThrow(new ObjectNotFoundException("Object not found"));
+
+        try {
+            service.findById(ID);
+        } catch (Exception ex) {
+            Assertions.assertEquals(ObjectNotFoundException.class, ex.getClass());
+            Assertions.assertEquals("Object not found", ex.getMessage());
+        }
     }
 
     @Test
