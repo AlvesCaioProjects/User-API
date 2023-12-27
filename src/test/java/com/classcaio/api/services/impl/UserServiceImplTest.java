@@ -16,6 +16,8 @@ import org.modelmapper.ModelMapper;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+
 class UserServiceImplTest {
 
     public static final Integer ID      = 1;
@@ -85,7 +87,18 @@ class UserServiceImplTest {
     }
 
     @Test
-    void create() {
+    void whenCreateThenReturnSuccess() {
+        Mockito.when(repository.save(any())).thenReturn(user);
+
+        User response = service.create(userDTO);
+
+        Assertions.assertNotNull(response);
+
+        Assertions.assertEquals(User.class, response.getClass());
+        Assertions.assertEquals(ID, response.getId());
+        Assertions.assertEquals(NAME, response.getName());
+        Assertions.assertEquals(EMAIL, response.getEmail());
+        Assertions.assertEquals(PASSWORD, response.getPassword());
     }
 
     @Test
