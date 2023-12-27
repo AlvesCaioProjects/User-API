@@ -3,6 +3,7 @@ package com.classcaio.api.services.impl;
 import com.classcaio.api.domain.User;
 import com.classcaio.api.domain.dto.UserDTO;
 import com.classcaio.api.repositories.UserRepository;
+import com.classcaio.api.services.exceptions.DataIntegratyViolationException;
 import com.classcaio.api.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 class UserServiceImplTest {
 
@@ -99,6 +101,19 @@ class UserServiceImplTest {
         Assertions.assertEquals(NAME, response.getName());
         Assertions.assertEquals(EMAIL, response.getEmail());
         Assertions.assertEquals(PASSWORD, response.getPassword());
+    }
+
+    @Test
+    void whenCreateThenReturnAnDataIntegrityViolationException() {
+        Mockito.when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try {
+            optionalUser.get().setId(2);
+            service.create(userDTO);
+        } catch (Exception ex) {
+            Assertions.assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            Assertions.assertEquals("e-mail already registered", ex.getMessage());
+        }
     }
 
     @Test
