@@ -21,10 +21,12 @@ import static org.mockito.ArgumentMatchers.*;
 
 class UserServiceImplTest {
 
-    public static final Integer ID      = 1;
-    public static final String NAME     = "Caio";
-    public static final String EMAIL    = "caio@mail.com";
+    public static final Integer ID = 1;
+    public static final String NAME = "Caio";
+    public static final String EMAIL = "caio@mail.com";
     public static final String PASSWORD = "123";
+    public static final String OBJECT_NOT_FOUND = "Object not found";
+    public static final String E_MAIL_ALREADY_REGISTERED = "e-mail already registered";
 
     @InjectMocks
     private UserServiceImpl service;
@@ -61,13 +63,13 @@ class UserServiceImplTest {
 
     @Test
     void whenFindByIdThenReturnAnObjectNotFoundException() {
-        Mockito.when(repository.findById(Mockito.anyInt())).thenThrow(new ObjectNotFoundException("Object not found"));
+        Mockito.when(repository.findById(Mockito.anyInt())).thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND));
 
         try {
             service.findById(ID);
         } catch (Exception ex) {
             Assertions.assertEquals(ObjectNotFoundException.class, ex.getClass());
-            Assertions.assertEquals("Object not found", ex.getMessage());
+            Assertions.assertEquals(OBJECT_NOT_FOUND, ex.getMessage());
         }
     }
 
@@ -111,7 +113,7 @@ class UserServiceImplTest {
             service.create(userDTO);
         } catch (Exception ex) {
             Assertions.assertEquals(DataIntegratyViolationException.class, ex.getClass());
-            Assertions.assertEquals("e-mail already registered", ex.getMessage());
+            Assertions.assertEquals(E_MAIL_ALREADY_REGISTERED, ex.getMessage());
         }
     }
 
@@ -139,7 +141,7 @@ class UserServiceImplTest {
             service.update(userDTO);
         } catch (Exception ex) {
             Assertions.assertEquals(DataIntegratyViolationException.class, ex.getClass());
-            Assertions.assertEquals("e-mail already registered", ex.getMessage());
+            Assertions.assertEquals(E_MAIL_ALREADY_REGISTERED, ex.getMessage());
         }
     }
 
@@ -149,6 +151,18 @@ class UserServiceImplTest {
         Mockito.doNothing().when(repository).deleteById(anyInt());
         service.delete(ID);
         Mockito.verify(repository, Mockito.times(1)).deleteById(anyInt());
+    }
+
+    @Test
+    void deleteWithObjectNotFound() {
+        Mockito.when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND));
+
+        try {
+            service.delete(ID);
+        } catch (Exception ex) {
+            Assertions.assertEquals(ObjectNotFoundException.class, ex.getClass());
+            Assertions.assertEquals(OBJECT_NOT_FOUND, ex.getMessage());
+        }
     }
 
     private void startUser() {
