@@ -17,8 +17,7 @@ import org.modelmapper.ModelMapper;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 class UserServiceImplTest {
 
@@ -145,7 +144,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void delete() {
+    void deleteWithSuccess() {
+        Mockito.when(repository.findById(anyInt())).thenReturn(optionalUser);
+        Mockito.doNothing().when(repository).deleteById(anyInt());
+        service.delete(ID);
+        Mockito.verify(repository, Mockito.times(1)).deleteById(anyInt());
     }
 
     private void startUser() {
