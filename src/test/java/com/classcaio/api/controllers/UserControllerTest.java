@@ -2,7 +2,6 @@ package com.classcaio.api.controllers;
 
 import com.classcaio.api.domain.User;
 import com.classcaio.api.domain.dto.UserDTO;
-import com.classcaio.api.repositories.UserRepository;
 import com.classcaio.api.services.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class UserControllerTest {
@@ -27,10 +33,10 @@ class UserControllerTest {
     }
 
     @InjectMocks
-    private UserServiceImpl service;
+    private UserController controller;
 
     @Mock
-    private UserRepository repository;
+    private UserServiceImpl service;
 
     @Mock
     private ModelMapper mapper;
@@ -39,7 +45,23 @@ class UserControllerTest {
     private UserDTO userDTO;
 
     @Test
-    void findById() {
+    void whenFindByIdThenReturnSuccess() {
+        //mock for return a user when find by id
+        when(service.findById(anyInt())).thenReturn(user);
+        //mock for return a userDTO when try to convert an instance
+        when(mapper.map(any(), any())).thenReturn(userDTO);
+
+        ResponseEntity<UserDTO> response = controller.findById(ID);
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(UserDTO.class, response.getBody().getClass());
+
+        assertEquals(ID, response.getBody().getId());
+        assertEquals(NAME, response.getBody().getName());
+        assertEquals(EMAIL, response.getBody().getEmail());
+        assertEquals(PASSWORD, response.getBody().getPassword());
     }
 
     @Test
