@@ -5,7 +5,6 @@ import com.classcaio.api.domain.dto.UserDTO;
 import com.classcaio.api.repositories.UserRepository;
 import com.classcaio.api.services.exceptions.DataIntegratyViolationException;
 import com.classcaio.api.services.exceptions.ObjectNotFoundException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,10 +16,14 @@ import org.modelmapper.ModelMapper;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 class UserServiceImplTest {
 
+    //constants
     public static final Integer ID = 1;
     public static final String NAME = "Caio";
     public static final String EMAIL = "caio@mail.com";
@@ -49,119 +52,130 @@ class UserServiceImplTest {
 
     @Test
     void whenFindByIdThenReturnAnUserInstance() {
-        Mockito.when(repository.findById(Mockito.anyInt())).thenReturn(optionalUser);
+        //mock to return an optional user when find by id
+        when(repository.findById(anyInt())).thenReturn(optionalUser);
 
         User response = service.findById(ID);
 
-        Assertions.assertNotNull(response);
+        assertNotNull(response);
 
-        Assertions.assertEquals(User.class, response.getClass());
-        Assertions.assertEquals(ID, response.getId());
-        Assertions.assertEquals(NAME, response.getName());
-        Assertions.assertEquals(EMAIL, response.getEmail());
+        assertEquals(User.class, response.getClass());
+        assertEquals(ID, response.getId());
+        assertEquals(NAME, response.getName());
+        assertEquals(EMAIL, response.getEmail());
     }
 
     @Test
     void whenFindByIdThenReturnAnObjectNotFoundException() {
-        Mockito.when(repository.findById(Mockito.anyInt())).thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND));
+        //mock of an exception when find by id
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND));
 
         try {
             service.findById(ID);
         } catch (Exception ex) {
-            Assertions.assertEquals(ObjectNotFoundException.class, ex.getClass());
-            Assertions.assertEquals(OBJECT_NOT_FOUND, ex.getMessage());
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(OBJECT_NOT_FOUND, ex.getMessage());
         }
     }
 
     @Test
     void whenFindAllThenReturnAnListOfUsers() {
-        Mockito.when(repository.findAll()).thenReturn(List.of(user));
+        //mock to return a list of users when find all
+        when(repository.findAll()).thenReturn(List.of(user));
 
         List<User> response = service.findAll();
 
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(1, response.size());
-        Assertions.assertEquals(User.class, response.get(0).getClass());
+        assertNotNull(response);
+        assertEquals(1, response.size());
+        assertEquals(User.class, response.get(0).getClass());
 
-        Assertions.assertEquals(ID, response.get(0).getId());
-        Assertions.assertEquals(NAME, response.get(0).getName());
-        Assertions.assertEquals(EMAIL, response.get(0).getEmail());
-        Assertions.assertEquals(PASSWORD, response.get(0).getPassword());
+        assertEquals(ID, response.get(0).getId());
+        assertEquals(NAME, response.get(0).getName());
+        assertEquals(EMAIL, response.get(0).getEmail());
+        assertEquals(PASSWORD, response.get(0).getPassword());
     }
 
     @Test
     void whenCreateThenReturnSuccess() {
-        Mockito.when(repository.save(any())).thenReturn(user);
+        //mock to return a user when create a user
+        when(repository.save(any())).thenReturn(user);
 
         User response = service.create(userDTO);
 
-        Assertions.assertNotNull(response);
+        assertNotNull(response);
 
-        Assertions.assertEquals(User.class, response.getClass());
-        Assertions.assertEquals(ID, response.getId());
-        Assertions.assertEquals(NAME, response.getName());
-        Assertions.assertEquals(EMAIL, response.getEmail());
-        Assertions.assertEquals(PASSWORD, response.getPassword());
+        assertEquals(User.class, response.getClass());
+        assertEquals(ID, response.getId());
+        assertEquals(NAME, response.getName());
+        assertEquals(EMAIL, response.getEmail());
+        assertEquals(PASSWORD, response.getPassword());
     }
 
     @Test
     void whenCreateThenReturnAnDataIntegrityViolationException() {
-        Mockito.when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+        //mock to return an optional user when find by email
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
 
         try {
             optionalUser.get().setId(2);
             service.create(userDTO);
         } catch (Exception ex) {
-            Assertions.assertEquals(DataIntegratyViolationException.class, ex.getClass());
-            Assertions.assertEquals(E_MAIL_ALREADY_REGISTERED, ex.getMessage());
+            assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            assertEquals(E_MAIL_ALREADY_REGISTERED, ex.getMessage());
         }
     }
 
     @Test
     void whenUpdateThenReturnSuccess() {
-        Mockito.when(repository.save(any())).thenReturn(user);
+        //mock to return a user when update data
+        when(repository.save(any())).thenReturn(user);
 
         User response = service.update(userDTO);
 
-        Assertions.assertNotNull(response);
+        assertNotNull(response);
 
-        Assertions.assertEquals(User.class, response.getClass());
-        Assertions.assertEquals(ID, response.getId());
-        Assertions.assertEquals(NAME, response.getName());
-        Assertions.assertEquals(EMAIL, response.getEmail());
-        Assertions.assertEquals(PASSWORD, response.getPassword());
+        assertEquals(User.class, response.getClass());
+        assertEquals(ID, response.getId());
+        assertEquals(NAME, response.getName());
+        assertEquals(EMAIL, response.getEmail());
+        assertEquals(PASSWORD, response.getPassword());
     }
 
     @Test
     void whenUpdateThenReturnAnDataIntegrityViolationException() {
-        Mockito.when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+        //mock to return an optional user when find by email
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
 
         try {
             optionalUser.get().setId(2);
             service.update(userDTO);
         } catch (Exception ex) {
-            Assertions.assertEquals(DataIntegratyViolationException.class, ex.getClass());
-            Assertions.assertEquals(E_MAIL_ALREADY_REGISTERED, ex.getMessage());
+            assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            assertEquals(E_MAIL_ALREADY_REGISTERED, ex.getMessage());
         }
     }
 
     @Test
     void deleteWithSuccess() {
-        Mockito.when(repository.findById(anyInt())).thenReturn(optionalUser);
+        //mock to return an optional user when find by id
+        when(repository.findById(anyInt())).thenReturn(optionalUser);
+        //mock to do nothing when the delete method is called
         Mockito.doNothing().when(repository).deleteById(anyInt());
         service.delete(ID);
+        //verify if the repository will be called 1 time
         Mockito.verify(repository, Mockito.times(1)).deleteById(anyInt());
     }
 
     @Test
     void deleteWithObjectNotFound() {
-        Mockito.when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND));
+        //mock of an exception when find by id
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND));
 
         try {
             service.delete(ID);
         } catch (Exception ex) {
-            Assertions.assertEquals(ObjectNotFoundException.class, ex.getClass());
-            Assertions.assertEquals(OBJECT_NOT_FOUND, ex.getMessage());
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(OBJECT_NOT_FOUND, ex.getMessage());
         }
     }
 
