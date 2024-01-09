@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UserControllerTest {
@@ -136,7 +136,17 @@ class UserControllerTest {
     }
 
     @Test
-    void delete() {
+    void whenDeleteThenReturnSuccess() {
+        //mock to do nothing when the delete method is called
+        doNothing().when(service).delete(any());
+
+        ResponseEntity<UserDTO> response = controller.delete(ID);
+
+        assertNotNull(response);
+        assertEquals(ResponseEntity.class, response.getClass());
+        //verify if the method delete will be called 1 time
+        verify(service, times(1)).delete(any());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     private void startUser() {

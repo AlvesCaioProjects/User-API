@@ -162,7 +162,7 @@ class UserServiceImplTest {
         //mock to do nothing when the delete method is called
         Mockito.doNothing().when(repository).deleteById(anyInt());
         service.delete(ID);
-        //verify if the repository will be called 1 time
+        //verify if the method delete will be called 1 time
         Mockito.verify(repository, Mockito.times(1)).deleteById(anyInt());
     }
 
