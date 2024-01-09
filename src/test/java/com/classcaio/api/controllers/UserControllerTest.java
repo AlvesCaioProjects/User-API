@@ -106,6 +106,7 @@ class UserControllerTest {
 
     @Test
     void whenCreateThenReturnSuccess() {
+        //mock for return a user
         when(service.create(any())).thenReturn(user);
 
         ResponseEntity<UserDTO> response = controller.create(userDTO);
@@ -116,7 +117,22 @@ class UserControllerTest {
     }
 
     @Test
-    void update() {
+    void whenUpdateThenReturnSuccess() {
+        //mock to return a user when update data
+        when(service.update(userDTO)).thenReturn(user);
+        //mock for return a userDTO when try to convert an instance
+        when(mapper.map(any(), any())).thenReturn(userDTO);
+
+        ResponseEntity<UserDTO> response = controller.update(ID, userDTO);
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(UserDTO.class, response.getBody().getClass());
+
+        assertEquals(ID, response.getBody().getId());
+        assertEquals(NAME, response.getBody().getName());
+        assertEquals(EMAIL, response.getBody().getEmail());
     }
 
     @Test
