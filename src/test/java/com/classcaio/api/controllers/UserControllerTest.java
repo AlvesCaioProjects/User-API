@@ -2,6 +2,7 @@ package com.classcaio.api.controllers;
 
 import com.classcaio.api.domain.User;
 import com.classcaio.api.domain.dto.UserDTO;
+import com.classcaio.api.services.exceptions.ObjectNotFoundException;
 import com.classcaio.api.services.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ class UserControllerTest {
     public static final String NAME = "Caio";
     public static final String EMAIL = "caio@mail.com";
     public static final String PASSWORD = "123";
+    public static final String OBJECT_NOT_FOUND = "Object not found";
 
     @InjectMocks
     private UserController controller;
@@ -65,6 +67,19 @@ class UserControllerTest {
         assertEquals(NAME, response.getBody().getName());
         assertEquals(EMAIL, response.getBody().getEmail());
         assertEquals(PASSWORD, response.getBody().getPassword());
+    }
+
+    @Test
+    void whenFindByIdThenReturnAnObjectNotFoundException() {
+        //mock of an exception when find by id
+        when(service.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND));
+
+        try {
+            service.findById(ID);
+        } catch (Exception ex) {
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(OBJECT_NOT_FOUND, ex.getMessage());
+        }
     }
 
     @Test
