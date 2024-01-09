@@ -12,6 +12,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,12 +29,6 @@ class UserControllerTest {
     public static final String EMAIL = "caio@mail.com";
     public static final String PASSWORD = "123";
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        startUser();
-    }
-
     @InjectMocks
     private UserController controller;
 
@@ -43,6 +40,12 @@ class UserControllerTest {
 
     private User user;
     private UserDTO userDTO;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        startUser();
+    }
 
     @Test
     void whenFindByIdThenReturnSuccess() {
@@ -65,7 +68,24 @@ class UserControllerTest {
     }
 
     @Test
-    void findAll() {
+    void whenFindAllThenReturnAListOfUserDTO() {
+        //mock for return a list of users
+        when(service.findAll()).thenReturn(List.of(user));
+        //mock for return a userDTO when try to convert an instance
+        when(mapper.map(any(), any())).thenReturn(userDTO);
+
+        ResponseEntity<List<UserDTO>> response = controller.findAll();
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(ArrayList.class, response.getBody().getClass());
+        assertEquals(UserDTO.class, response.getBody().get(0).getClass());
+
+        assertEquals(ID, response.getBody().get(0).getId());
+        assertEquals(NAME, response.getBody().get(0).getName());
+        assertEquals(EMAIL, response.getBody().get(0).getEmail());
+        assertEquals(PASSWORD, response.getBody().get(0).getPassword());
     }
 
     @Test

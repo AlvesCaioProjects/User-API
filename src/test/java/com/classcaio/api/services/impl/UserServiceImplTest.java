@@ -79,7 +79,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void whenFindAllThenReturnAnListOfUsers() {
+    void whenFindAllThenReturnAListOfUsers() {
         //mock to return a list of users when find all
         when(repository.findAll()).thenReturn(List.of(user));
 
